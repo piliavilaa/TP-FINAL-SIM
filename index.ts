@@ -2,7 +2,6 @@ import { HTMLUtils } from './HTMLUtils';
 import { Simulador } from './Simulador';
 import './style.css';
 
-
 //-----------------------Definiciones------------------------------------------------
 //-----------------------Definición de los cuadros de texto de la interfaz de usuario.
 const txtCantNros: HTMLInputElement = document.getElementById(
@@ -56,7 +55,6 @@ const colPacientes: string[] = ['ID Pasajero', 'Tipo Pasajero', 'Estado'];
 //-----------------------Ocultamos la seccion en donde esta la tabla.
 HTMLUtils.ocultarSeccion(divTablaSimulacion);
 
-
 //-----------------------Definición de botones de la interfaz de usuario.
 const btnSimular: HTMLButtonElement = document.getElementById(
   'btnSimular'
@@ -80,11 +78,6 @@ let BFinAtencion: number;
 let AFinPago: number;
 let BFinPago: number;
 
-
-
-
-
-
 //-----------------------Funcionalidad------------------------------------------------
 //-----------------------Disparamos la simulación.
 btnSimular.addEventListener('click', () => {
@@ -93,18 +86,55 @@ btnSimular.addEventListener('click', () => {
 });
 
 const simular = () => {
-//-----------------------Validamos los parámetros ingresados por el usuario.
+  //-----------------------Validamos los parámetros ingresados por el usuario.
   if (!validarParametros()) return;
-  
-  var startTime = performance.now();
-  HTMLUtils.limpiarTablaSimulacion(tablaSimulacion, cantEncabezadosTablaSimulacion, cantSubEncabezadosTablaSimulacion);
-  console.log(`La limpieza tardó ${performance.now() - startTime} milisegundos`);
-  simulador = new Simulador();
-  // simulador.simular(n, eventoDesde, mediaLlegadaPaciente, AFinDeterminacion, BFinDeterminacion, AFinAutorizacion, BFinAutorizacion, AFinAtencion, BFinAtencion, AFinPago, BFinPago)
 
+  var startTime = performance.now();
+  HTMLUtils.limpiarTablaSimulacion(
+    tablaSimulacion,
+    cantEncabezadosTablaSimulacion,
+    cantSubEncabezadosTablaSimulacion
+  );
+  console.log(
+    `La limpieza tardó ${performance.now() - startTime} milisegundos`
+  );
+
+  //Realizamos la simulacion
+
+  simulador = new Simulador();
+  simulador.simular(
+    n,
+    eventoDesde,
+    mediaLlegadaPaciente,
+    AFinDeterminacion,
+    BFinDeterminacion,
+    AFinAutorizacion,
+    BFinAutorizacion,
+    AFinAtencion,
+    BFinAtencion,
+    AFinPago,
+    BFinPago
+  );
+
+  matrizEstado = simulador.getMatrizEstado();
+  cantMaxPasajeros = simulador.getCantMaxPasajerosEnSistema();
+
+  // Cargamos la tabla a mostrar.
+  HTMLUtils.completarEncabezadosPasajeros(
+    cantMaxPasajeros,
+    tablaSimulacion,
+    colPacientes
+  );
+  HTMLUtils.llenarTablaSimulacion(
+    matrizEstado,
+    indicesEventosCandidatos,
+    tablaSimulacion
+  );
+  console.log(
+    `La renderización tardó ${performance.now() - startTime} milisegundos`
+  );
   HTMLUtils.mostrarSeccion(divTablaSimulacion);
 };
-
 
 //-----------------------Metodo de validación de los parámetros del usuario.
 function validarParametros(): boolean {
@@ -134,7 +164,7 @@ function validarParametros(): boolean {
     );
     return false;
   }
-  if (mediaLlegadaPaciente < 0 ) {
+  if (mediaLlegadaPaciente < 0) {
     alert('La media no puede ser un valor negativo.');
     return false;
   }

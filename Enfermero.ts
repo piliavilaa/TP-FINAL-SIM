@@ -1,6 +1,6 @@
 import { EstadoEnfermero } from './EstadoEnfermero';
 
-export class Empleado {
+export class Enfermero {
   private estado: EstadoEnfermero;
 
   constructor() {

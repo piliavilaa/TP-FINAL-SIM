@@ -6,4 +6,5 @@ export enum Evento {
   FIN_ATENCION_MED_1,
   FIN_ATENCION_MED_2,
   FIN_PAGO,
+  FIN_SIMULACION
 }

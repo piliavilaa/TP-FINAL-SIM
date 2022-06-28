@@ -28,5 +28,70 @@ export module HTMLUtils {
     )
       tabla.rows[1].deleteCell(i - 1);
   }
-  
+
+  // Completa los encabezados de la tabla con los datos de los pasajeros.
+  export function completarEncabezadosPasajeros(
+    cantPasajeros: number,
+    tabla: HTMLTableElement,
+    columnas: string[]
+  ): void {
+    let encabezados: HTMLTableRowElement = tabla.rows[0];
+    let subEncabezados: HTMLTableRowElement = tabla.rows[1];
+
+    for (let i: number = 0; i < cantPasajeros; i++) {
+      let col: HTMLTableHeaderCellElement = encabezados.insertCell();
+      col.colSpan = columnas.length;
+      col.style.fontWeight = 'bold';
+      col.appendChild(document.createTextNode('Pasajero N° ' + (i + 1)));
+
+      for (let j: number = 0; j < columnas.length; j++) {
+        let subCol: HTMLTableHeaderCellElement = subEncabezados.insertCell();
+        subCol.style.fontWeight = 'bold';
+        subCol.appendChild(document.createTextNode(columnas[j]));
+      }
+    }
+  }
+
+  // Crea una fila a una tabla html a partir de un vector pasado por parámetro.
+  export function crearFilaTablaSimulacion(
+    fila: string[],
+    indicesColor: number[]
+  ): string {
+    let filaHTML: string = '<tr>';
+    for (let i: number = 0; i < fila.length; i++) {
+      let celdaHTML: string = '<td';
+      for (let j: number = 0; j < indicesColor.length; j++) {
+        if (i == indicesColor[j]) celdaHTML += ' style="color: red"';
+      }
+      celdaHTML += '>';
+      const valorCelda: string = !(
+        typeof fila[i] === 'undefined' ||
+        fila[i] == 'null' ||
+        fila[i] === '-1.0000' ||
+        fila[i] === ''
+      )
+        ? fila[i]
+        : '-';
+      celdaHTML += valorCelda + '</td>';
+      filaHTML += celdaHTML;
+    }
+    filaHTML += '</tr>';
+    return filaHTML;
+  }
+
+  // Carga de tabla html.
+  export function llenarTablaSimulacion(
+    matriz: any[][],
+    indicesColor: number[],
+    tabla: HTMLTableElement
+  ): void {
+    tabla.hidden = true;
+    let bodyTabla: string = '';
+    for (let i: number = 0; i < matriz.length; i++) {
+      let filaHTML: string = crearFilaTablaSimulacion(matriz[i], indicesColor);
+      bodyTabla += filaHTML;
+    }
+    tabla.tBodies[0].innerHTML = bodyTabla;
+    tabla.hidden = false;
+  }
 }

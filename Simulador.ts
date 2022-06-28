@@ -1,4 +1,8 @@
 import { Evento } from './Evento';
+import { Enfermero } from './Enfermero';
+import { Paciente } from './Paciente';
+import { Medico } from './Medico';
+import { Utils } from './Utils';
 
 export class Simulador {
   public mediaTiempoEntreLlegadas: number;
@@ -14,6 +18,8 @@ export class Simulador {
   public cantMaxPasajeros: number;
   public probTiposPacientes: number[];
 
+  //-------------------Metodo simular
+
   public simular(
     cantEventos: number,
     eventoDesde: number,
@@ -27,6 +33,8 @@ export class Simulador {
     AFinPago: number,
     BFinPago: number
   ): void {
+    //----------------Definiciones
+
     this.probTiposPacientes = [0.4, 1];
     this.mediaTiempoEntreLlegadas = mediaLlegadaPaciente;
     this.aTiempoDeterminacion = AFinDeterminacion;
@@ -39,7 +47,6 @@ export class Simulador {
     this.bTiempoPago = BFinPago;
 
     this.matrizEstado = [];
-
     // Definimos el rango de filas que vamos a mostrar.
     let indiceHasta: number = eventoDesde + 399;
     if (indiceHasta > cantEventos - 1) indiceHasta = cantEventos;
@@ -49,9 +56,95 @@ export class Simulador {
 
     let tipoEvento: Evento;
     let reloj: number = 0;
+
+    // Llegada de un paciente.
+    let rndLlegada: number = -1;
+    let tiempoEntreLlegadas: number = -1;
+    let proximaLlegada: number = -1;
+    // let rndTipoPasajero: number = -1;
+    // let tipoPasajero: string = '';
+
+    // Determinación del paciente.
+    let rndDeterminacion: number = -1;
+    let tiempoDeterminacion: number = -1;
+    let finDeterminacion: number = -1;
+    let rndTipoPaciente: number = -1;
+    let tipoPaciente: string = '';
+
+    // Autorización del paciente.
+    let rndAutorizacion: number = -1;
+    let tiempoAutorizacion: number = -1;
+    let finAutorizacion: number = -1;
+
+    // Atención del paciente.
+    let rndAntencion: number = -1;
+    let tiempoAtencion: number = -1;
+    let finAtencion1: number = -1;
+    let finAtencion2: number = -1;
+
+    // Pago del paciente.
+    let rndPago: number = -1;
+    let tiempoPago: number = -1;
+    let finPago: number = -1;
+
+    // Enfermero.
+    let enfermero = new Enfermero();
+    let colaEnfermero: Paciente[] = [];
+
+    // Medicos.
+    let medico1 = new Medico();
+    let medico2 = new Medico();
+    let colaMedicosUrgencia: Paciente[] = [];
+    let colaMedicosComun: Paciente[] = [];
+    let tiempoRemanencia : number;
+
+     // Pacientes en el sistema.
+     let pacientesEnSistema: Paciente[] = [];
+    
+    
+    //Variables estadisticas
+    let cantidadMaxEnSala: number = 0;
+    let acuEsperaPacientesUrgentes: number = 0;
+    let totalPacientesUrgente: number = 0;
+    let acuEsperaPacientesComunes: number = 0;
+    let totalPacientesComun: number = 0;
+    let acuDineroAtencion: number = 0;
+
+    this.cantMaxPasajeros = 0;
+    
+    
+    
+    for (let i: number = 0; i < cantEventos; i++) {
+      evento = [];
+      
+      // Determinamos el tipo de evento.
+      if (i == 0) {
+        tipoEvento = Evento.INICIO_SIMULACION;
+      }
+      else if (i == cantEventos - 1) {
+        tipoEvento = Evento.FIN_SIMULACION;
+      }
+      else {
+        let eventosCandidatos: number[] = [
+          proximaLlegada,
+          finDeterminacion,
+          finAutorizacion,
+          finAtencion1,
+          finAtencion2,
+          finPago
+        ];
+        for (let i: number = 0; i < pacientesEnSistema.length; i++) {
+          let pasajero: Paciente = pacientesEnSistema[i];
+        } 
+      
+
+        reloj = Utils.getMenorMayorACero(eventosCandidatos);
+        tipoEvento = this.getSiguienteEvento(eventosCandidatos);
+
+      }
+    }
+
   }
-
-
 
   //--------------------METODOS NECESARIOS PARA EL SIMULAR
 
@@ -59,9 +152,9 @@ export class Simulador {
     return this.matrizEstado;
   }
 
-  // public getCantMaxPasajerosEnSistema(): number {
-  //   return this.cantMaxPasajeros;
-  // }
+  public getCantMaxPasajerosEnSistema(): number {
+    return this.cantMaxPasajeros;
+  }
 
   public getDistribucionExponencial(rnd: number, media: number): number {
     if (1 - rnd !== 0) return -media * Math.log(1 - rnd);
@@ -107,21 +200,28 @@ export class Simulador {
   }
 
   // Cálculo del tiempo de atención, que tiene distribución  uniforme.
-  public getTiempoAtencion(rndTiempoAtencion: number): number{
+  public getTiempoAtencion(rndTiempoAtencion: number): number {
     let tiempo: number =
-    this.aTiempoAtencion +
-    rndTiempoAtencion *
-      (this.bTiempoAtencion - this.aTiempoAtencion);
-  return tiempo;
+      this.aTiempoAtencion +
+      rndTiempoAtencion * (this.bTiempoAtencion - this.aTiempoAtencion);
+    return tiempo;
   }
 
   // Cálculo del tiempo de pago, que tiene distribución uniforme.
   public getTiempoPago(rndTiempoPago: number): number {
     let tiempo: number =
-    this.aTiempoPago +
-    rndTiempoPago *
-      (this.bTiempoPago - this.aTiempoPago);
-  return tiempo;
+      this.aTiempoPago + rndTiempoPago * (this.bTiempoPago - this.aTiempoPago);
+    return tiempo;
+  }
+
+  public getSiguienteEvento(tiemposEventos: number[]): Evento {
+    let menor: number = Utils.getMenorMayorACero(tiemposEventos);
+    for (let i: number = 0; i < tiemposEventos.length; i++) {
+      if (tiemposEventos[i] === menor) {
+          return Evento[Evento[i+1]];
+      }
+    }
+    return -1;
   }
 
 }
