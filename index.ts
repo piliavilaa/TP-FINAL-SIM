@@ -95,7 +95,12 @@ btnSimular.addEventListener('click', () => {
 const simular = () => {
 //-----------------------Validamos los parámetros ingresados por el usuario.
   if (!validarParametros()) return;
+  
+  var startTime = performance.now();
   HTMLUtils.limpiarTablaSimulacion(tablaSimulacion, cantEncabezadosTablaSimulacion, cantSubEncabezadosTablaSimulacion);
+  console.log(`La limpieza tardó ${performance.now() - startTime} milisegundos`);
+  simulador = new Simulador();
+  // simulador.simular(n, eventoDesde, mediaLlegadaPaciente, AFinDeterminacion, BFinDeterminacion, AFinAutorizacion, BFinAutorizacion, AFinAtencion, BFinAtencion, AFinPago, BFinPago)
 
   HTMLUtils.mostrarSeccion(divTablaSimulacion);
 };
