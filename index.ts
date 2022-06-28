@@ -50,7 +50,7 @@ const tablaSimulacion: HTMLTableElement = document.getElementById(
 const cantEncabezadosTablaSimulacion = tablaSimulacion.rows[0].cells.length;
 const cantSubEncabezadosTablaSimulacion = tablaSimulacion.rows[1].cells.length;
 const indicesEventosCandidatos: number[] = [5, 8, 13, 16, 17, 20];
-const colPacientes: string[] = ['ID Pasajero', 'Tipo Pasajero', 'Estado'];
+const colPacientes: string[] = ['ID Paciente', 'Tipo Paciente', 'Estado'];
 
 //-----------------------Ocultamos la seccion en donde esta la tabla.
 HTMLUtils.ocultarSeccion(divTablaSimulacion);

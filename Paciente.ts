@@ -2,12 +2,12 @@ import { EstadoPaciente } from './EstadoPaciente';
 
 export class Paciente {
   private id: number;
-  private tipoPaciente: string;
+  private _tipoPaciente: string;
   private estado: EstadoPaciente;
 
   public constructor(id: number, tipoPaciente: string) {
     this.id = id;
-    this.tipoPaciente = tipoPaciente;
+    this._tipoPaciente = tipoPaciente;
   }
 
   public esperandoDeterminacion(): void {
@@ -51,7 +51,11 @@ export class Paciente {
   }
 
   public getTipoPaciente(): string {
-    return this.tipoPaciente;
+    return this._tipoPaciente;
+  }
+
+  public set TipoPaciente(tipo : string) {
+    this._tipoPaciente = tipo;
   }
 
   // public getMinutoLlegada(): number {
