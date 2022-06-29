@@ -161,11 +161,13 @@ export class Simulador {
           // Creamos el objeto pasajero.
           let tipo: string = 'Indefinido';
           let paciente: Paciente = new Paciente(totalPacientes, tipo);
-          console.log(paciente.getId());
+          //console.log(paciente.getId());
 
           //Preguntamos por el enfermero
           if (enfermero.estaLibre()) {
+            console.log('holahola')
             paciente.siendoDeterminado();
+            console.log(paciente.getEstado());
             enfermero.ocupado();
 
             rndDeterminacion = Math.random();
@@ -184,7 +186,7 @@ export class Simulador {
         case Evento.FIN_DETERMINACION: {
           //--------PARA EL PACIENTE QUE ESTABA SIENDO DETERMINADO
           // Buscamos el pasajero determinado y le asignamos el tipo.
-          console.log(EstadoPaciente.ESPERANDO_PAGO);
+          //console.log(EstadoPaciente.ESPERANDO_PAGO);
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (pacienteAtendido) =>
               pacienteAtendido.getEstado() == EstadoPaciente.SIENDO_DETERMINADO
@@ -212,8 +214,9 @@ export class Simulador {
           // Preguntamos si hay alguien en la cola.
           if (colaEnfermero.length === 0) {
             enfermero.libre();
-          } else {
-            // Quitamos a un pasajero de la cola
+          } 
+          else {
+            // Quitamos a un paciente de la cola
             let pacienteIngresa: Paciente = colaEnfermero.shift();
             //vemos si el paciente que ingresa esta para pagar o esta para ser determinado
             if (pacienteIngresa.getEstado() == EstadoPaciente.ESPERANDO_PAGO) {

@@ -42,7 +42,7 @@ export module HTMLUtils {
       let col: HTMLTableHeaderCellElement = encabezados.insertCell();
       col.colSpan = columnas.length;
       col.style.fontWeight = 'bold';
-      col.appendChild(document.createTextNode('Pasajero N° ' + (i + 1)));
+      col.appendChild(document.createTextNode('Paciente N° ' + (i + 1)));
 
       for (let j: number = 0; j < columnas.length; j++) {
         let subCol: HTMLTableHeaderCellElement = subEncabezados.insertCell();
