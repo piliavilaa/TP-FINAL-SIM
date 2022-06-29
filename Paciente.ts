@@ -25,7 +25,7 @@ export class Paciente {
   public esperandoAtencion(): void {
     this.estado = EstadoPaciente.ESPERANDO_ATENCION;
   }
-  
+
   public esperandoObra(): void {
     this.estado = EstadoPaciente.ESPERANDO_OBRA;
   }
@@ -33,7 +33,7 @@ export class Paciente {
   public siendoAtendido1(): void {
     this.estado = EstadoPaciente.SIENDO_ATENDIDO1;
   }
- 
+
   public siendoAtendido2(): void {
     this.estado = EstadoPaciente.SIENDO_ATENDIDO2;
   }
@@ -46,7 +46,7 @@ export class Paciente {
     this.estado = EstadoPaciente.INTERRUMPIDO2;
   }
 
-  public esperandoPago(): void {
+  public esperandoPago() {
     this.estado = EstadoPaciente.ESPERANDO_PAGO;
   }
 
@@ -66,7 +66,7 @@ export class Paciente {
     return this._tipoPaciente;
   }
 
-  public set TipoPaciente(tipo : string) {
+  public set TipoPaciente(tipo: string) {
     this._tipoPaciente = tipo;
   }
 
