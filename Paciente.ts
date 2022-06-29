@@ -38,8 +38,12 @@ export class Paciente {
     this.estado = EstadoPaciente.SIENDO_ATENDIDO2;
   }
 
-  public enInterrupcion(): void {
-    this.estado = EstadoPaciente.INTERRUMPIDO;
+  public enInterrupcion1(): void {
+    this.estado = EstadoPaciente.INTERRUMPIDO1;
+  }
+
+  public enInterrupcion2(): void {
+    this.estado = EstadoPaciente.INTERRUMPIDO2;
   }
 
   public esperandoPago(): void {
