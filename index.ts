@@ -102,34 +102,34 @@ const simular = () => {
   //Realizamos la simulacion
 
   simulador = new Simulador();
-  simulador.simular(
-    n,
-    eventoDesde,
-    mediaLlegadaPaciente,
-    AFinDeterminacion,
-    BFinDeterminacion,
-    AFinAutorizacion,
-    BFinAutorizacion,
-    AFinAtencion,
-    BFinAtencion,
-    AFinPago,
-    BFinPago
-  );
+  // simulador.simular(
+  //   n,
+  //   eventoDesde,
+  //   mediaLlegadaPaciente,
+  //   AFinDeterminacion,
+  //   BFinDeterminacion,
+  //   AFinAutorizacion,
+  //   BFinAutorizacion,
+  //   AFinAtencion,
+  //   BFinAtencion,
+  //   AFinPago,
+  //   BFinPago
+  // );
 
-  matrizEstado = simulador.getMatrizEstado();
-  cantMaxPasajeros = simulador.getCantMaxPasajerosEnSistema();
+  // matrizEstado = simulador.getMatrizEstado();
+  // cantMaxPasajeros = simulador.getCantMaxPasajerosEnSistema();
 
   // Cargamos la tabla a mostrar.
-  HTMLUtils.completarEncabezadosPasajeros(
-    cantMaxPasajeros,
-    tablaSimulacion,
-    colPacientes
-  );
-  HTMLUtils.llenarTablaSimulacion(
-    matrizEstado,
-    indicesEventosCandidatos,
-    tablaSimulacion
-  );
+  // HTMLUtils.completarEncabezadosPasajeros(
+  //   cantMaxPasajeros,
+  //   tablaSimulacion,
+  //   colPacientes
+  // );
+  // HTMLUtils.llenarTablaSimulacion(
+  //   matrizEstado,
+  //   indicesEventosCandidatos,
+  //   tablaSimulacion
+  // );
   console.log(
     `La renderización tardó ${performance.now() - startTime} milisegundos`
   );

@@ -5,6 +5,7 @@ import { Medico } from './Medico';
 import { Utils } from './Utils';
 import { EstadoPaciente } from './EstadoPaciente';
 import { Obra } from './Obra';
+import { EstadoMedico } from './EstadoMedico';
 
 export class Simulador {
   public mediaTiempoEntreLlegadas: number;
@@ -99,8 +100,8 @@ export class Simulador {
     let medico2 = new Medico();
     let colaMedicosUrgencia: Paciente[] = [];
     let colaMedicosComun: Paciente[] = [];
-    let tiempoRemanencia: number = -1;
-
+    let tiempoRemanencia1: number = -1;
+    let tiempoRemanencia2: number = -1;
     // Obra
     let obra = new Obra();
     let colaObraSocial: Paciente[] = [];
@@ -143,11 +144,10 @@ export class Simulador {
       }
 
       switch (tipoEvento) {
-   
         case Evento.INICIO_SIMULACION: {
           rndLlegada = Math.random();
           tiempoEntreLlegadas = this.getTiempoEntreLlegadas(rndLlegada);
-          proximaLlegada = (reloj + tiempoEntreLlegadas);
+          proximaLlegada = reloj + tiempoEntreLlegadas;
           break;
         }
 
@@ -155,27 +155,28 @@ export class Simulador {
           // Generamos la llegada del próximo paciente.
           rndLlegada = Math.random();
           tiempoEntreLlegadas = this.getTiempoEntreLlegadas(rndLlegada);
-          proximaLlegada = (reloj + tiempoEntreLlegadas);
+          proximaLlegada = reloj + tiempoEntreLlegadas;
           totalPacientes++;
 
           // Creamos el objeto pasajero.
           let tipo: string = 'Indefinido';
           let paciente: Paciente = new Paciente(totalPacientes, tipo);
 
+          //Preguntamos por el enfermero
           if (enfermero.estaLibre()) {
             paciente.siendoDeterminado();
             enfermero.ocupado();
 
-            // Generamos el tiempo de determinación porque el enfermero esta libre.
             rndDeterminacion = Math.random();
             tiempoDeterminacion = this.getTiempoDeterminacion(rndDeterminacion);
-            finDeterminacion = (reloj + tiempoDeterminacion);
+            finDeterminacion = reloj + tiempoDeterminacion;
           }
-            // Lo mandamos a la cola del enfermero porque no esta libre
+          // Lo mandamos a la cola del enfermero porque no esta libre
           else {
             paciente.esperandoDeterminacion();
             colaEnfermero.push(paciente);
           }
+          pacientesEnSistema.push(paciente);
           break;
         }
 
@@ -191,35 +192,40 @@ export class Simulador {
           pacienteAtendido.TipoPaciente = tipoPaciente;
 
           //Le asignamos el estado y vemos si la obra social esta disponible
-          pacienteAtendido.esperandoAutorizacion();
-          if (colaObraSocial.length == 0)
-          { obra.ocupado();
+          if (obra.estaLibre) {
+            obra.ocupado();
+            pacienteAtendido.esperandoAutorizacion();
+            colaObraSocial.push(pacienteAtendido);
             // calculo el fin de autorizacion
             rndAutorizacion = Math.random();
             tiempoAutorizacion = this.getTiempoAutorizacion(rndAutorizacion);
             finAutorizacion = reloj + tiempoAutorizacion;
-
-          }
-          else{
+          } else {
             //lo meto en la cola de la obra social sin calcular su tiempo de autorizacion
-          colaObraSocial.push(pacienteAtendido);
+            pacienteAtendido.esperandoObra();
+            colaObraSocial.push(pacienteAtendido);
           }
-          
 
-          //--------PARA EL PACIENTE QUE SALE DE LA COLA
+          //--------PARA EL PACIENTE QUE INGRESA A LA DETERMINACION
           // Preguntamos si hay alguien en la cola.
           if (colaEnfermero.length === 0) {
             enfermero.libre();
           } else {
-            // El servidor pasa de ocupado a ocupado.
-            enfermero.ocupado();
-
-            // Quitamos a un pasajero de la cola y cambiamos su estado.
-            colaEnfermero.shift().siendoDeterminado();
-            // Generamos el tiempo de determinacion.
-            rndDeterminacion = Math.random();
-            tiempoDeterminacion = this.getTiempoDeterminacion(rndDeterminacion);
-            finDeterminacion = reloj + tiempoDeterminacion;
+            // Quitamos a un pasajero de la cola
+            let pacienteIngresa: Paciente = colaEnfermero.shift();
+            //vemos si el paciente que ingresa esta para pagar o esta para ser determinado
+            if (pacienteIngresa.getEstado() == EstadoPaciente.ESPERANDO_PAGO) {
+              pacienteIngresa.pagando();
+              rndPago = Math.random();
+              tiempoPago = this.getTiempoDeterminacion(rndPago);
+              finPago = reloj + tiempoPago;
+            } else {
+              pacienteIngresa.siendoDeterminado();
+              rndDeterminacion = Math.random();
+              tiempoDeterminacion =
+                this.getTiempoDeterminacion(rndDeterminacion);
+              finDeterminacion = reloj + tiempoDeterminacion;
+            }
           }
         }
 
@@ -228,11 +234,93 @@ export class Simulador {
           // Buscamos el pasajero atendido y le asignamos el tipo.
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (paciente) =>
-              paciente.getEstado() === EstadoPaciente.SIENDO_DETERMINADO
+              paciente.getEstado() === EstadoPaciente.ESPERANDO_AUTORIZACION
           );
-          rndTipoPaciente = Math.random();
-          tipoPaciente = this.getTipoPaciente(rndTipoPaciente);
-          pacienteAtendido.TipoPaciente = tipoPaciente;
+          
+          //paciente comun
+          if (pacienteAtendido.getTipoPaciente()== 'Comun')
+          {
+            if(medico1.estaLibre())
+            {
+              pacienteAtendido.siendoAtendido1();
+              medico1.atendiendoComun();
+              rndAntencion = Math.random();
+              tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+              finAtencion1 = (reloj + tiempoAtencion);
+            }
+            else
+            {
+              if(medico2.estaLibre())
+              {
+                pacienteAtendido.siendoAtendido2();
+                medico2.atendiendoComun();
+                rndAntencion = Math.random();
+                tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+                finAtencion2 = (reloj + tiempoAtencion);
+              }
+              else
+              {
+                colaMedicosComun.push(pacienteAtendido);
+                pacienteAtendido.esperandoAtencion();
+              }
+            }
+          }
+          //paciente urgente
+          else
+          {
+            if(medico1.estaLibre())
+            {
+              pacienteAtendido.siendoAtendido1();
+              medico1.atendiendoUrgencia();
+              rndAntencion = Math.random();
+              tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+              finAtencion1 = (reloj + tiempoAtencion);
+            }
+            else
+            {
+              if(medico2.estaLibre())
+              {
+                pacienteAtendido.siendoAtendido2();
+                medico2.atendiendoUrgencia();
+                rndAntencion = Math.random();
+                tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+                finAtencion2 = (reloj + tiempoAtencion);
+              }
+              else
+              {
+                //medico 1 atendiendo un comun medico 2 ocupado
+                if(medico1.getEstado() == EstadoMedico.ATENDIENDO_COMUN)
+                {
+                  pacienteAtendido.siendoAtendido1();
+                  tiempoRemanencia1 = (finAtencion1 - reloj)
+                  medico1.atendiendoUrgencia();
+                  rndAntencion = Math.random();
+                  tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+                  finAtencion1 = (reloj + tiempoAtencion);
+                }
+                //medico 1 atendiendo urgencia medico 2 ocupado
+                else
+                {
+                  //medico 2 con un comun
+                  if(medico2.getEstado() == EstadoMedico.ATENDIENDO_COMUN)
+                  {
+                    pacienteAtendido.siendoAtendido2();
+                    tiempoRemanencia2 = (finAtencion2 - reloj)
+                    medico2.atendiendoUrgencia();
+                    rndAntencion = Math.random();
+                    tiempoAtencion = this.getTiempoAtencion(rndAntencion);
+                    finAtencion2 = (reloj + tiempoAtencion);
+                  }
+                  //el medico 2 esta con una urgencia al igual que el 1
+                  else
+                  {
+                    colaMedicosUrgencia.push(pacienteAtendido);
+                    pacienteAtendido.esperandoAtencion;
+                  }
+                }
+              }
+            }
+          }
 
           //Le asignamos el estado y lo metemos en la sala de espera
           pacienteAtendido.esperandoAutorizacion();
@@ -243,19 +331,19 @@ export class Simulador {
           tiempoAutorizacion = this.getTiempoAutorizacion(rndAutorizacion);
           finAutorizacion = reloj + tiempoAutorizacion;
 
-          //--------PARA EL PACIENTE QUE ESTABA ESPERANDO_AUTORIZACION
-          
-          
-          
+          //--------PARA EL PACIENTE QUE ENTRA A LA AUTORIZACION
+          if (colaObraSocial.length === 0) {
+            obra.libre();
+          } 
+          else {
+            let pacienteIngresa : Paciente = colaObraSocial.shift();
+            pacienteIngresa.esperandoAutorizacion();
+            rndAutorizacion = Math.random();
+            tiempoAutorizacion = this.getTiempoAutorizacion(rndAutorizacion);
+            finAutorizacion = (reloj + tiempoAutorizacion);
 
-
-
+          }
         }
-
-
-
-
-
       }
 
       // Reseteamos algunas variables.

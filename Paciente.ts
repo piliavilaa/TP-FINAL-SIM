@@ -25,9 +25,17 @@ export class Paciente {
   public esperandoAtencion(): void {
     this.estado = EstadoPaciente.ESPERANDO_ATENCION;
   }
+  
+  public esperandoObra(): void {
+    this.estado = EstadoPaciente.ESPERANDO_OBRA;
+  }
 
-  public siendoAtendido(): void {
-    this.estado = EstadoPaciente.SIENDO_ATENDIDO;
+  public siendoAtendido1(): void {
+    this.estado = EstadoPaciente.SIENDO_ATENDIDO1;
+  }
+ 
+  public siendoAtendido2(): void {
+    this.estado = EstadoPaciente.SIENDO_ATENDIDO2;
   }
 
   public enInterrupcion(): void {

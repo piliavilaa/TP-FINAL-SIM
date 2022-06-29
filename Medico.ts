@@ -31,7 +31,7 @@ export class Medico {
     return this.estado == EstadoMedico.ATENDIENDO_COMUN;
   }
 
-  public getEstado(): string {
-    return EstadoMedico[this.estado];
+  public getEstado(): EstadoMedico {
+    return this.estado;
   }
 }
