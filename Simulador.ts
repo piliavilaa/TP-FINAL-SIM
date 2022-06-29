@@ -142,7 +142,7 @@ export class Simulador {
         reloj = Utils.getMenorMayorACero(eventosCandidatos);
         tipoEvento = this.getSiguienteEvento(eventosCandidatos);
       }
-
+      console.log(tipoEvento);
       switch (tipoEvento) {
         case Evento.INICIO_SIMULACION: {
           rndLlegada = Math.random();
@@ -165,9 +165,7 @@ export class Simulador {
 
           //Preguntamos por el enfermero
           if (enfermero.estaLibre()) {
-            console.log('holahola')
             paciente.siendoDeterminado();
-            console.log(paciente.getEstado());
             enfermero.ocupado();
 
             rndDeterminacion = Math.random();
@@ -184,6 +182,7 @@ export class Simulador {
         }
 
         case Evento.FIN_DETERMINACION: {
+          finDeterminacion = -1;
           //--------PARA EL PACIENTE QUE ESTABA SIENDO DETERMINADO
           // Buscamos el pasajero determinado y le asignamos el tipo.
           //console.log(EstadoPaciente.ESPERANDO_PAGO);
@@ -197,7 +196,6 @@ export class Simulador {
 
           //Vemos si la obra social esta disponible
           if (obra.estaLibre) {
-            console.log('esta libre')
             obra.ocupado();
             pacienteAtendido.esperandoAutorizacion();
             // calculo el fin de autorizacion
@@ -214,8 +212,7 @@ export class Simulador {
           // Preguntamos si hay alguien en la cola.
           if (colaEnfermero.length === 0) {
             enfermero.libre();
-          } 
-          else {
+          } else {
             // Quitamos a un paciente de la cola
             let pacienteIngresa: Paciente = colaEnfermero.shift();
             //vemos si el paciente que ingresa esta para pagar o esta para ser determinado
@@ -232,9 +229,11 @@ export class Simulador {
               finDeterminacion = reloj + tiempoDeterminacion;
             }
           }
+          break;
         }
 
         case Evento.FIN_AUTORIZACION: {
+          finAutorizacion = -1;
           //--------PARA EL PACIENTE QUE ESTABA ESPERANDO_AUTORIZACION
           // Buscamos el pasajero atendido y le asignamos el tipo.
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
@@ -242,7 +241,7 @@ export class Simulador {
               pacienteAtendido.getEstado() ==
               EstadoPaciente.ESPERANDO_AUTORIZACION
           );
-
+          console.log('hola');
           //paciente comun
           if (pacienteAtendido.getTipoPaciente() == 'Comun') {
             if (medico1.estaLibre()) {
@@ -332,15 +331,17 @@ export class Simulador {
             tiempoAutorizacion = this.getTiempoAutorizacion(rndAutorizacion);
             finAutorizacion = reloj + tiempoAutorizacion;
           }
+          break;
         }
 
         case Evento.FIN_ATENCION_MED_1: {
+          finAtencion1 = -1;
           //PARA EL PACIENTE QUE SE VA DE LA ATENCION
+          console.log('hola');
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (pacienteAtendido) =>
               pacienteAtendido.getEstado() == EstadoPaciente.SIENDO_ATENDIDO1
           );
-          console.log(pacienteAtendido);
           //vemos si el enfermero esta ocupado
           if (enfermero.estaOcupado()) {
             //pacienteAtendido.esperandoPago();
@@ -403,9 +404,11 @@ export class Simulador {
             tiempoAtencion = this.getTiempoAtencion(rndAntencion);
             finAtencion1 = reloj + tiempoAtencion;
           }
+          break;
         }
 
         case Evento.FIN_ATENCION_MED_2: {
+          finAtencion2 = -1;
           //PARA EL PACIENTE QUE SE VA DE LA ATENCION
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (pacienteAtendido) =>
@@ -476,9 +479,11 @@ export class Simulador {
             tiempoAtencion = this.getTiempoAtencion(rndAntencion);
             finAtencion2 = reloj + tiempoAtencion;
           }
+          break;
         }
 
         case Evento.FIN_PAGO: {
+          finPago = -1;
           //no hay nadie en la cola
           if (colaEnfermero.length === 0) {
             enfermero.libre();
@@ -504,6 +509,7 @@ export class Simulador {
               finDeterminacion = reloj + tiempoDeterminacion;
             }
           }
+          break;
         }
 
         // Fin de simulación.
