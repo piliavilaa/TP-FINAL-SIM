@@ -34,4 +34,9 @@ export class Medico {
   public getEstado(): EstadoMedico {
     return this.estado;
   }
+
+  public getEstado2(): string {
+    return EstadoMedico[this.estado];
+  }
+
 }

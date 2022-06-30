@@ -54,6 +54,10 @@ export class Paciente {
     this.estado = EstadoPaciente.PAGANDO;
   }
 
+  public finalizado(): void {
+    this.estado = EstadoPaciente.FINALIZADO;
+  }
+
   public getEstado(): EstadoPaciente {
     return this.estado;
   }

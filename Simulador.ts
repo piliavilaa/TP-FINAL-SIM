@@ -195,7 +195,7 @@ export class Simulador {
           pacienteAtendido.TipoPaciente = tipoPaciente;
 
           //Vemos si la obra social esta disponible
-          if (obra.estaLibre) {
+          if (obra.estaLibre()) {
             obra.ocupado();
             pacienteAtendido.esperandoAutorizacion();
             // calculo el fin de autorizacion
@@ -344,7 +344,8 @@ export class Simulador {
           );
           //vemos si el enfermero esta ocupado
           if (enfermero.estaOcupado()) {
-            //pacienteAtendido.esperandoPago();
+            pacienteAtendido.esperandoPago();
+            colaEnfermero.push(pacienteAtendido);
           } else {
             enfermero.ocupado();
             pacienteAtendido.pagando();
@@ -418,7 +419,7 @@ export class Simulador {
           //vemos si el enfermero esta ocupado
           if (enfermero.estaOcupado()) {
             colaEnfermero.push(pacienteAtendido);
-            //pacienteAtendido.esperandoPago();
+            pacienteAtendido.esperandoPago();
           } else {
             enfermero.ocupado();
             pacienteAtendido.pagando();
@@ -484,6 +485,14 @@ export class Simulador {
 
         case Evento.FIN_PAGO: {
           finPago = -1;
+          //PARA EL PACIENTE QUE TERMINO SU PAGO
+          let pacienteAtendido: Paciente = pacientesEnSistema.find(
+            (pacienteAtendido) =>
+              pacienteAtendido.getEstado() == EstadoPaciente.PAGANDO
+          );
+          pacienteAtendido.finalizado();
+
+          //PARA EL QUE SALE DE LA COLA
           //no hay nadie en la cola
           if (colaEnfermero.length === 0) {
             enfermero.libre();
@@ -558,8 +567,8 @@ export class Simulador {
           obra.getEstado(),
           colaObraSocial.length.toString(),
 
-          medico1.getEstado().toString(),
-          medico2.getEstado().toString(),
+          medico1.getEstado2().toString(),
+          medico2.getEstado2().toString(),
           colaMedicosComun.length.toString(),
           colaMedicosUrgencia.length.toString(),
           tiempoRemanencia1.toFixed(4),
