@@ -152,6 +152,7 @@ export class Simulador {
         }
 
         case Evento.LLEGADA_PACIENTE: {
+          console.log('ocurrio en llegada')
           // Generamos la llegada del próximo paciente.
           rndLlegada = Math.random();
           tiempoEntreLlegadas = this.getTiempoEntreLlegadas(rndLlegada);
@@ -183,6 +184,7 @@ export class Simulador {
 
         case Evento.FIN_DETERMINACION: {
           finDeterminacion = -1;
+          console.log('ocurrio en det')
           //--------PARA EL PACIENTE QUE ESTABA SIENDO DETERMINADO
           // Buscamos el pasajero determinado y le asignamos el tipo.
           //console.log(EstadoPaciente.ESPERANDO_PAGO);
@@ -234,6 +236,7 @@ export class Simulador {
 
         case Evento.FIN_AUTORIZACION: {
           finAutorizacion = -1;
+          console.log('ocurrio en autor')
           //--------PARA EL PACIENTE QUE ESTABA ESPERANDO_AUTORIZACION
           // Buscamos el pasajero atendido y le asignamos el tipo.
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
@@ -241,7 +244,8 @@ export class Simulador {
               pacienteAtendido.getEstado() ==
               EstadoPaciente.ESPERANDO_AUTORIZACION
           );
-          console.log('hola');
+          console.log('tipo del paciente');
+          console.log(pacienteAtendido.getTipoPaciente());
           //paciente comun
           if (pacienteAtendido.getTipoPaciente() == 'Comun') {
             if (medico1.estaLibre()) {
@@ -336,6 +340,7 @@ export class Simulador {
 
         case Evento.FIN_ATENCION_MED_1: {
           finAtencion1 = -1;
+          console.log('ocurrio en atencion1')
           //PARA EL PACIENTE QUE SE VA DE LA ATENCION
           console.log('hola');
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
@@ -343,6 +348,8 @@ export class Simulador {
               pacienteAtendido.getEstado() == EstadoPaciente.SIENDO_ATENDIDO1
           );
           //vemos si el enfermero esta ocupado
+          console.log(medico1.getEstado())
+          console.log(medico2.getEstado())
           if (enfermero.estaOcupado()) {
             pacienteAtendido.esperandoPago();
             colaEnfermero.push(pacienteAtendido);
@@ -410,6 +417,7 @@ export class Simulador {
 
         case Evento.FIN_ATENCION_MED_2: {
           finAtencion2 = -1;
+          console.log('ocurrio en atencion2')
           //PARA EL PACIENTE QUE SE VA DE LA ATENCION
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (pacienteAtendido) =>
@@ -485,6 +493,7 @@ export class Simulador {
 
         case Evento.FIN_PAGO: {
           finPago = -1;
+          console.log('ocurrio en pago')
           //PARA EL PACIENTE QUE TERMINO SU PAGO
           let pacienteAtendido: Paciente = pacientesEnSistema.find(
             (pacienteAtendido) =>
